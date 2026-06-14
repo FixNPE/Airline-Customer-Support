@@ -202,8 +202,13 @@ def display_sidebar_config() -> str:
     """Display sidebar configuration and return API URL"""
     st.sidebar.markdown("## ⚙️ Configuration")
     
-    # API URL configuration
-    default_url = st.secrets.get("api_base_url", "http://localhost:8000") if "api_base_url" in st.secrets else "http://localhost:8000"
+    # API URL configuration with safe secrets access
+    try:
+        default_url = st.secrets.get("api_base_url", "http://localhost:8000")
+    except FileNotFoundError:
+        logger.warning("Secrets file not found. Using default API URL.")
+        default_url = "http://localhost:8000"
+    
     api_url = st.sidebar.text_input(
         "Backend API URL",
         value=default_url,
